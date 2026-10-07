@@ -1,0 +1,28 @@
+#!/bin/bash
+
+DIR="${1:-$HOME/Downloads}"
+
+get_folder() {
+    case "${1,,}" in    # ,, för caseinsensitivity
+        *.jpg|*.jpeg|*.png|*.gif|*.svg|*.webp) echo images ;;
+        *.pdf|*.doc|*.docx|*.odt|*.txt|*.md)   echo documents ;;
+        *.xls|*.xlsx|*.ods|*.csv)              echo spreadsheets ;;
+        *.mp4|*.mkv|*.avi|*.mov|*.webm)        echo videos ;;
+        *.mp3|*.wav|*.flac|*.ogg)              echo music ;;
+        *.zip|*.tar|*.gz|*.7z|*.rar)           echo archives ;;
+        *)                                     echo other ;;
+    esac
+}
+
+echo "watching $DIR"
+
+while true; do
+    for file in "$DIR"/*; do
+        [[ -f "$file" ]] || continue
+        name=$(basename "$file")
+        folder=$(get_folder "$name")
+        mkdir -p "$DIR/$folder"
+        mv "$file" "$DIR/$folder/" && echo "$name -> $folder/"
+    done
+    sleep 2
+done
